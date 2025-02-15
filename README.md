@@ -94,8 +94,3 @@ Number of free blocks: 1
 - **Best Fit Allocation:** Minimizes external fragmentation.
 - **Block Merging:** Merges adjacent free blocks during deallocation.
 - **Memory Alignment:** Ensures all allocations are aligned to 4-byte boundaries.
-
-## Potential Improvements
-- Implementing `realloc` and `calloc`.
-- Tracking memory utilization.
-- Improving allocation efficiency.
