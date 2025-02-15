@@ -1,127 +1,101 @@
-﻿# Heap-Management Simulation (Best fit method)
-Project Overview
+# Heap Management Simulation (Best Fit Method)
 
-This project simulates heap memory management in C using the Best Fit allocation strategy. It implements custom versions of malloc and free to manage memory dynamically within a fixed-size heap.
+## Project Overview
+This project implements a heap memory management system in C using the Best Fit method. It provides custom implementations of `malloc` and `free` functions to dynamically allocate and deallocate memory within a simulated heap.
 
-Author: Hrushikesh Musaloj 
+**Author:** Hrushikesh Musaloj (BT23CSE024)
 
-Features
+## Features
+- **Custom Memory Allocation:** Implements `my_malloc` using the Best Fit technique to allocate memory efficiently.
+- **Memory Deallocation:** Implements `my_free` to release memory back to the heap.
+- **Heap Initialization:** Simulates a 1 MB heap with block splitting and merging.
+- **Metadata Management:** Uses a `MetaDataBlock` structure to track block sizes and manage free/allocated lists.
+- **Memory Optimization:** Merges adjacent free blocks to minimize fragmentation.
 
-Custom implementation of malloc and free
+## Technical Details
+- **Heap Size:** 1 MB + metadata overhead.
+- **Minimum Allocation:** `MIN_ALLOC_SIZE = sizeOfMetadata + sizeof(int)`.
+- **Memory Alignment:** Allocates memory in multiples of 4 bytes.
 
-Best Fit memory allocation technique
-
-Memory fragmentation reduction through block merging
-
-Metadata management for memory blocks
-
-Simple, lightweight, and efficient design
-
-How It Works
-
-The program uses an array as a simulated heap. Each memory block is preceded by metadata that stores the block size and a pointer to the next free block. The Best Fit strategy selects the smallest free block that can accommodate the requested memory.
-
-Memory Block Structure
-
+### Data Structures
+```c
 typedef struct MetaDataBlock {
     size_t size;
     struct MetaDataBlock *next;
 } MetaDataBlock;
+```
+- `size`: Size of the memory block (excluding metadata).
+- `next`: Pointer to the next free block.
 
-Key Constants
+### Constants
+- `MAX_HEAP_SIZE = 1048576 + sizeof(MetaDataBlock)`
+- `MIN_ALLOC_SIZE = sizeOfMetadata + sizeof(int)`
 
-MAX_HEAP_SIZE: 1 MB (1,048,576 bytes) + metadata size
+## Functions Implemented
 
-MIN_ALLOC_SIZE: Minimum size to allocate, ensuring space for metadata and data
+### 1. `initializeHeap()`
+Initializes the heap and sets up the free list with a single large free block.
 
-Core Functions
+### 2. `my_malloc(size_t sizeRequest)`
+- Allocates memory using the Best Fit strategy.
+- Splits blocks if necessary.
+- Returns a pointer to the allocated memory.
 
-1. void *my_malloc(size_t sizeRequest)
+### 3. `my_free(void *freeDataPtr)`
+- Frees the allocated memory.
+- Merges adjacent free blocks to reduce fragmentation.
 
-Allocates a memory block of the requested size using the Best Fit strategy.
+### 4. `printMetaDataList(MetaDataBlock *head)`
+Prints the details of all blocks in the given list (free or allocated).
 
-Returns: Pointer to allocated memory or NULL if allocation fails.
+### 5. `findNearestMultipleOf4(size_t size)`
+Rounds up the size to the nearest multiple of 4 for memory alignment.
 
-2. void my_free(void *freeDataPtr)
+### 6. `mergeCurrentAndNext()` and `mergePrevAndCurrent()`
+Merge adjacent free blocks to maintain contiguous free memory.
 
-Frees a previously allocated memory block.
+## Compilation Instructions
+1. Open a terminal in the project directory.
+2. Compile using `gcc`:
+```bash
+gcc -o heap_management heap_management.c
+```
+3. Run the program:
+```bash
+./heap_management
+```
 
-Merges adjacent free blocks to minimize fragmentation.
+## Usage Example
+```c
+int *ptr1 = (int*)my_malloc(50);
+int *ptr2 = (int*)my_malloc(100);
+my_free(ptr1);
+my_free(ptr2);
+printMetaDataList(freeListHead);
+```
 
-3. void initializeHeap()
-
-Initializes the heap by setting the initial free block.
-
-4. void printMetaDataList(MetaDataBlock *head)
-
-Displays the free memory blocks and their sizes.
-
-Allocation Strategy: Best Fit
-
-The Best Fit strategy searches the free list for the smallest block that can accommodate the requested size, reducing external fragmentation.
-
-Memory Merging (Defragmentation)
-
-After freeing a block, the program merges adjacent free blocks whenever possible to maintain contiguous free memory.
-
-Usage
-
-Compilation
-
-gcc -o heap_manager heap_manager.c
-
-Execution
-
-./heap_manager
-
-Sample Code Usage
-
-#include <stdio.h>
-
-int main() {
-    initializeHeap();
-
-    int *arr1 = (int *)my_malloc(50);
-    printf("Allocated 50 bytes\n");
-
-    int *arr2 = (int *)my_malloc(100);
-    printf("Allocated 100 bytes\n");
-
-    my_free(arr1);
-    printf("Freed first block\n");
-
-    printMetaDataList(freeListHead);
-
-    return 0;
-}
-
-Expected Output (Simplified)
-
+## Output Example
+```
 Allocated 50 bytes
 Allocated 100 bytes
-Freed first block
-Address of Free block: 0x...
-Size of Free block: 52
+Freed 50 bytes
+Freed 100 bytes
+Address of Free block: 0x100000
+Size of Free block: 1048576
 Number of free blocks: 1
+```
 
-Error Handling
+## Error Handling
+- **Zero-size Allocation:** Prints an error if zero bytes are requested.
+- **Out-of-bounds Free:** Detects and handles invalid free requests.
+- **Allocation Failure:** Prints an error if no suitable block is found.
 
-Allocation of zero bytes is not allowed.
+## Optimization Techniques
+- **Best Fit Allocation:** Minimizes external fragmentation.
+- **Block Merging:** Merges adjacent free blocks during deallocation.
+- **Memory Alignment:** Ensures all allocations are aligned to 4-byte boundaries.
 
-Freeing NULL pointers is prohibited.
-
-Attempting to free memory outside the heap boundaries results in an error.
-
-Performance Insights
-
-Best Fit reduces external fragmentation but may increase allocation time.
-
-Merging adjacent free blocks helps maintain large contiguous memory areas.
-
-Possible Improvements
-
-Implementing additional allocation strategies like First Fit or Worst Fit.
-
-Introducing more detailed logging and statistics.
-
-Developing a user-friendly interface for memory usage visualization.
+## Potential Improvements
+- Implementing `realloc` and `calloc`.
+- Tracking memory utilization.
+- Improving allocation efficiency.
